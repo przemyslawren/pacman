@@ -24,7 +24,7 @@ public class MainMenuFrame extends JFrame {
             JButton exitButton = new JButton("Exit");
 
             newGameButton.addActionListener(e -> {
-                new GameFrame();
+                new SizeOptionsFrame();
                 exitMainMenuFrame();
             });
 
@@ -33,10 +33,7 @@ public class MainMenuFrame extends JFrame {
                 exitMainMenuFrame();
             });
 
-            exitButton.addActionListener(e -> {
-                System.exit(0);
-
-            });
+            exitButton.addActionListener(e -> System.exit(0));
 
 
             panel.add(newGameButton);
