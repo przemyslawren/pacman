@@ -30,7 +30,7 @@ public class MainMenuController implements GameController {
 
     @Override
     public void showSizeOptions() {
-        new SizeOptionsFrame(this);
+        new SizeOptionsFrame(this, mainMenuFrame);
     }
 
     @Override
