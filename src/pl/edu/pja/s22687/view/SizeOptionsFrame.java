@@ -1,10 +1,15 @@
 package pl.edu.pja.s22687.view;
 
+import pl.edu.pja.s22687.controller.GameController;
+
 import javax.swing.*;
 
 public class SizeOptionsFrame {
+    private GameController controller;
 
-    public SizeOptionsFrame() {
+    public SizeOptionsFrame(GameController controller) {
+        this.controller = controller;
+
         while (true) {
             JTextField rowsField = new JTextField(5);
             JTextField columnsField = new JTextField(5);
@@ -26,14 +31,14 @@ public class SizeOptionsFrame {
                     if (rows < 10 || columns < 10 || rows > 100 || columns > 100) {
                         JOptionPane.showMessageDialog(null, "The size must be between 10-100 x 10-100", "Wrong size", JOptionPane.ERROR_MESSAGE);
                     } else {
-                        new GameFrame(rows, columns);
+                        controller.startNewGame(rows, columns);
                         break;
                     }
                 } catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(null, "The size of maze must be a number", "Wrong type", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
-                new MainMenuFrame();
+                controller.returnToMainMenu();
                 break;
             }
         }
