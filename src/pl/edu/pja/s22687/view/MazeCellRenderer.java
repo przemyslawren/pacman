@@ -15,15 +15,16 @@ public class MazeCellRenderer extends DefaultTableCellRenderer {
 
 
         CellType cellType = (CellType) value;
-
         switch (cellType) {
             case WALL:
+                setText("");
                 setBackground(Color.BLACK);
                 break;
             case CORRIDOR:
                 setBackground(Color.WHITE);
                 break;
             case COIN:
+                setText("");
                 setBackground(Color.YELLOW);
                 break;
             case PACMAN:

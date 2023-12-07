@@ -37,6 +37,11 @@ public class MazeTableModel extends AbstractTableModel {
     public int getColumnCount() { return mazeData[0].length; }
 
     @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return CellType.class;
+    }
+
+    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         return mazeData[rowIndex][columnIndex];
     }
