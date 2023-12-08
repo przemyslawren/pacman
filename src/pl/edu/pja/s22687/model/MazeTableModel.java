@@ -1,52 +1,90 @@
 package pl.edu.pja.s22687.model;
 
 import javax.swing.table.AbstractTableModel;
+import java.util.*;
 
 public class MazeTableModel extends AbstractTableModel {
-    private CellType[][] mazeData;
+    private final int rows, cols;
+    private final CellType[][] maze;
+    private final boolean[][] visited;
+    private final Random rand = new Random();
 
-    public MazeTableModel(int rows, int columns) {
-        this.mazeData = new CellType[rows][columns];
+    public MazeTableModel(int rows, int cols) {
+        this.rows = rows;
+        this.cols = cols;
+        this.maze = new CellType[rows][cols];
+        this.visited = new boolean[rows][cols];
         initializeMaze();
+        generateMaze();
     }
 
     private void initializeMaze() {
-        for (int row = 0; row < mazeData.length; row++) {
-            for (int col = 0; col < mazeData[row].length; col++) {
-                if (isWallPosition(row, col)) {
-                    mazeData[row][col] = CellType.WALL;
-                } else {
-                    mazeData[row][col] = CellType.COIN;
-                }
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                maze[row][col] = CellType.WALL;
             }
         }
-        // Dodaj monety i inne elementy, jeśli to konieczne
     }
 
-    private boolean isWallPosition(int row, int col) {
-        // Prosta logika definiująca, gdzie znajdują się ściany
-        // Na przykład tworzenie granic labiryntu:
-        if (row == 0 || col == 0 || row == mazeData.length - 1 || col == mazeData[0].length - 1) {
-            return true;
+    public void generateMaze() {
+        // Rozpocznij od losowego punktu
+        dfs(rand.nextInt(rows), rand.nextInt(cols));
+    }
+
+    private void dfs(int row, int col) {
+        if (row < 0 || col < 0 || row >= rows || col >= cols || visited[row][col]) {
+            return;
         }
-        // Możesz dodać inne wzory dla ścian wewnątrz labiryntu
-        return false;
+
+        visited[row][col] = true;
+        maze[row][col] = CellType.CORRIDOR;
+
+        // Lista kierunków: góra, dół, lewo, prawo
+        List<int[]> directions = new ArrayList<>(Arrays.asList(
+                new int[]{-2, 0}, new int[]{2, 0}, new int[]{0, -2}, new int[]{0, 2}
+        ));
+
+        Collections.shuffle(directions); // Losowa kolejność kierunków
+
+        for (int[] dir : directions) {
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+
+            if (isValidMove(newRow, newCol)) {
+                // Przełam ścianę pomiędzy komórkami
+                maze[(row + newRow) / 2][(col + newCol) / 2] = CellType.CORRIDOR;
+                dfs(newRow, newCol);
+            }
+        }
     }
 
-    public int getRowCount() { return mazeData.length; }
-    public int getColumnCount() { return mazeData[0].length; }
+    private boolean isValidMove(int row, int col) {
+        return row > 0 && col > 0 && row < rows - 1 && col < cols - 1 && !visited[row][col];
+    }
+
+    public CellType[][] getMaze() {
+        return maze;
+    }
+
+    @Override
+    public int getRowCount() {
+        return maze.length;
+    }
+
+
+
+    @Override
+    public int getColumnCount() {
+        return maze[0].length;
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        return maze[rowIndex][columnIndex];
+    }
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         return CellType.class;
     }
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        return mazeData[rowIndex][columnIndex];
-    }
-
-    public CellType[][] getMazeData() { return mazeData; }
-
-    public void setMazeData(CellType[][] mazeData) { this.mazeData = mazeData; }
 }

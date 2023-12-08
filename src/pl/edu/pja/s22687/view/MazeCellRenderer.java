@@ -21,6 +21,7 @@ public class MazeCellRenderer extends DefaultTableCellRenderer {
                 setBackground(Color.BLACK);
                 break;
             case CORRIDOR:
+                setText("");
                 setBackground(Color.WHITE);
                 break;
             case COIN:
