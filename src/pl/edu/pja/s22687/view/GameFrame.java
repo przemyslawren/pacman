@@ -4,22 +4,30 @@ import pl.edu.pja.s22687.model.CellType;
 import pl.edu.pja.s22687.model.MazeTableModel;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class GameFrame extends JFrame {
+    private JTable table;
+    private JScrollPane scrollPane;
+
     public GameFrame(int rows, int columns) {
         MazeTableModel model = new MazeTableModel(rows, columns);
-        JTable table = new JTable(model);
+        this.table = new JTable(model);
+        this.scrollPane = new JScrollPane(table);
         table.setDefaultRenderer(CellType.class, new MazeCellRenderer());
         configureTable(table);
-        add(new JScrollPane(table));
+        add(scrollPane, BorderLayout.CENTER);
         initializeUI(rows, columns);
+        resizeTableToFillWindow();
     }
 
     private void initializeUI(int rows, int columns) {
         setTitle("Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setDefaultLookAndFeelDecorated(true);
-        setSize(800, 600);
+        setSize(1024, 768);
         setLocationRelativeTo(null);
         setIconImage(new ImageIcon("src/pl/edu/pja/s22687/resources/ghost.png").getImage());
         setVisible(true);
@@ -36,4 +44,26 @@ public class GameFrame extends JFrame {
         table.setFillsViewportHeight(true);
     }
 
+    private void resizeTableToFillWindow() {
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                scaleTable();
+            }
+        });
+    }
+
+    private void scaleTable() {
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        int tableWidth = scrollPane.getViewport().getWidth();
+        int tableHeight = scrollPane.getViewport().getHeight();
+
+        int rowHeight = tableHeight / table.getRowCount();
+        int columnWidth = tableWidth / table.getColumnCount();
+
+        table.setRowHeight(rowHeight);
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setPreferredWidth(columnWidth);
+        }
+    }
 }
