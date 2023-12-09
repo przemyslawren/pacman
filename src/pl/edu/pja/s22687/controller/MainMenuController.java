@@ -11,16 +11,14 @@ public class MainMenuController implements GameController {
     private MainMenuFrame mainMenuFrame;
 
     public MainMenuController() {
-        this.model = new GameModel();
         this.mainMenuFrame = new MainMenuFrame(this);
     }
 
     @Override
     public void startNewGame(int rows, int columns) {
-        model.setRows(rows);
-        model.setColumns(columns);
+        this.model = new GameModel(rows, columns);
         mainMenuFrame.setVisible(false);
-        new GameFrame(rows, columns);
+        new GameFrame(model);
     }
 
     @Override

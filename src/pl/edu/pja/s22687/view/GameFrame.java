@@ -1,7 +1,7 @@
 package pl.edu.pja.s22687.view;
 
 import pl.edu.pja.s22687.model.CellType;
-import pl.edu.pja.s22687.model.MazeTableModel;
+import pl.edu.pja.s22687.model.GameModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,18 +12,17 @@ public class GameFrame extends JFrame {
     private JTable table;
     private JScrollPane scrollPane;
 
-    public GameFrame(int rows, int columns) {
-        MazeTableModel model = new MazeTableModel(rows, columns);
+    public GameFrame(GameModel model) {
         this.table = new JTable(model);
         this.scrollPane = new JScrollPane(table);
         table.setDefaultRenderer(CellType.class, new MazeCellRenderer());
         configureTable(table);
         add(scrollPane, BorderLayout.CENTER);
-        initializeUI(rows, columns);
+        initializeUI();
         resizeTableToFillWindow();
     }
 
-    private void initializeUI(int rows, int columns) {
+    private void initializeUI() {
         setTitle("Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setDefaultLookAndFeelDecorated(true);

@@ -1,17 +1,91 @@
 package pl.edu.pja.s22687.model;
 
-public class GameModel {
-    private int rows;
-    private int columns;
+import javax.swing.table.AbstractTableModel;
+import java.util.*;
 
-    public GameModel() {
-        this.rows = 0;
-        this.columns = 0;
+public class GameModel extends AbstractTableModel {
+    private int rows;
+    private int cols;
+    private final CellType[][] maze;
+    private final boolean[][] visited;
+    private final Random rand = new Random();
+
+    public GameModel(int rows, int cols) {
+        this.rows = rows;
+        this.cols = cols;
+        this.maze = new CellType[rows][cols];
+        this.visited = new boolean[rows][cols];
+        initializeMaze();
+        generateMaze();
     }
 
-    public int getRows() { return rows; }
-    public int getColumns() { return columns; }
+    private void initializeMaze() {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                maze[row][col] = CellType.WALL;
+            }
+        }
+    }
 
-    public void setRows(int rows) { this.rows = rows; }
-    public void setColumns(int columns) { this.columns = columns; }
+    public void generateMaze() {
+        // Rozpocznij od losowego punktu
+        dfs(rand.nextInt(rows), rand.nextInt(cols));
+    }
+
+    private void dfs(int row, int col) {
+        if (row < 0 || col < 0 || row >= rows || col >= cols || visited[row][col]) {
+            return;
+        }
+
+        visited[row][col] = true;
+        maze[row][col] = CellType.CORRIDOR;
+
+        // Lista kierunków: góra, dół, lewo, prawo
+        List<int[]> directions = new ArrayList<>(Arrays.asList(
+                new int[]{-2, 0}, new int[]{2, 0}, new int[]{0, -2}, new int[]{0, 2}
+        ));
+
+        Collections.shuffle(directions); // Losowa kolejność kierunków
+
+        for (int[] dir : directions) {
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+
+            if (isValidMove(newRow, newCol)) {
+                // Przełam ścianę pomiędzy komórkami
+                maze[(row + newRow) / 2][(col + newCol) / 2] = CellType.CORRIDOR;
+                dfs(newRow, newCol);
+            }
+        }
+    }
+
+    private boolean isValidMove(int row, int col) {
+        return row > 0 && col > 0 && row < rows - 1 && col < cols - 1 && !visited[row][col];
+    }
+
+    public CellType[][] getMaze() {
+        return maze;
+    }
+
+    @Override
+    public int getRowCount() {
+        return maze.length;
+    }
+
+
+
+    @Override
+    public int getColumnCount() {
+        return maze[0].length;
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        return maze[rowIndex][columnIndex];
+    }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return CellType.class;
+    }
 }
