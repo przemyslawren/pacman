@@ -1,18 +1,23 @@
 package pl.edu.pja.s22687.view;
 
 import pl.edu.pja.s22687.CellType;
+import pl.edu.pja.s22687.Direction;
 import pl.edu.pja.s22687.model.GameModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class GameFrame extends JFrame {
+    private GameModel model;
     private JTable table;
     private JScrollPane scrollPane;
 
     public GameFrame(GameModel model) {
+        this.model = model;
         this.table = new JTable(model);
         this.scrollPane = new JScrollPane(table);
         table.setDefaultRenderer(CellType.class, new MazeCellRenderer());
@@ -20,6 +25,15 @@ public class GameFrame extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
         initializeUI();
         resizeTableToFillWindow();
+
+        setFocusable(true);
+        requestFocusInWindow();
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                handleKeyPress(e);
+            }
+        });
     }
 
     private void initializeUI() {
@@ -41,6 +55,9 @@ public class GameFrame extends JFrame {
         table.setRowSelectionAllowed(false);
         table.setColumnSelectionAllowed(false);
         table.setFillsViewportHeight(true);
+
+        //dodaj żeby nie było przerwy między komórkami
+        table.setIntercellSpacing(new Dimension(0, 0));
     }
 
     private void resizeTableToFillWindow() {
@@ -63,6 +80,25 @@ public class GameFrame extends JFrame {
         table.setRowHeight(rowHeight);
         for (int i = 0; i < table.getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setPreferredWidth(columnWidth);
+        }
+    }
+
+    private void handleKeyPress(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_UP:
+                model.movePacman(Direction.UP);
+                break;
+            case KeyEvent.VK_DOWN:
+                model.movePacman(Direction.DOWN);
+                break;
+            case KeyEvent.VK_LEFT:
+                model.movePacman(Direction.LEFT);
+                break;
+            case KeyEvent.VK_RIGHT:
+                model.movePacman(Direction.RIGHT);
+                break;
+            default:
+                break;
         }
     }
 }

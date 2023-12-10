@@ -1,9 +1,12 @@
 package pl.edu.pja.s22687.model;
 
 import pl.edu.pja.s22687.CellType;
+import pl.edu.pja.s22687.Direction;
 
 import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class GameModel extends AbstractTableModel {
     private int rows;
@@ -11,6 +14,7 @@ public class GameModel extends AbstractTableModel {
     private final CellType[][] maze;
     private final boolean[][] visited;
     private final Random rand = new Random();
+    private Point pacmanLocation;
 
     public GameModel(int rows, int cols) {
         this.rows = rows;
@@ -19,6 +23,7 @@ public class GameModel extends AbstractTableModel {
         this.visited = new boolean[rows][cols];
         initializeMaze();
         generateMaze();
+        placePacman();
     }
 
     private void initializeMaze() {
@@ -66,9 +71,51 @@ public class GameModel extends AbstractTableModel {
                 && (rand.nextDouble() < 0.5 || !visited[row][col]);
     }
 
-    public CellType[][] getMaze() {
-        return maze;
+    private void placePacman() {
+        Random rand = new Random();
+        int x, y;
+        do {
+            x = rand.nextInt(maze[0].length);
+            y = rand.nextInt(maze.length);
+        } while (maze[y][x] != CellType.CORRIDOR);
+
+        pacmanLocation = new Point(x, y);
+        maze[y][x] = CellType.PACMAN;
     }
+
+    public void movePacman(Direction direction) {
+        Point nextLocation = new Point(pacmanLocation);
+        switch (direction) {
+            case UP:
+                nextLocation.y--;
+                break;
+            case DOWN:
+                nextLocation.y++;
+                break;
+            case LEFT:
+                nextLocation.x--;
+                break;
+            case RIGHT:
+                nextLocation.x++;
+                break;
+        }
+
+        if (canMove(nextLocation)) {
+            maze[pacmanLocation.y][pacmanLocation.x] = CellType.CORRIDOR;
+            pacmanLocation.setLocation(nextLocation);
+            maze[pacmanLocation.y][pacmanLocation.x] = CellType.PACMAN;
+        }
+
+        fireTableDataChanged();
+    }
+
+    private boolean canMove(Point location) {
+        return location.x >= 0 && location.x < maze[0].length
+                && location.y >= 0 && location.y < maze.length
+                && maze[location.y][location.x] == CellType.CORRIDOR;
+    }
+
+
 
     @Override
     public int getRowCount() {

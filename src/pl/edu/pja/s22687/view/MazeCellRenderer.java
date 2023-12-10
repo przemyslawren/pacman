@@ -29,14 +29,14 @@ public class MazeCellRenderer extends DefaultTableCellRenderer {
                 setBackground(Color.YELLOW);
                 break;
             case PACMAN:
+                setText("");
                 setBackground(Color.ORANGE);
                 break;
             case GHOST:
+                setText("");
                 setBackground(Color.BLUE);
                 break;
             default:
-                setBackground(Color.GRAY);
-                setText("");
                 break;
         }
 
