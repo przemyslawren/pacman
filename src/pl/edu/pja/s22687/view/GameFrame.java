@@ -2,6 +2,8 @@ package pl.edu.pja.s22687.view;
 
 import pl.edu.pja.s22687.CellType;
 import pl.edu.pja.s22687.Direction;
+import pl.edu.pja.s22687.GameUpdateThread;
+import pl.edu.pja.s22687.ScoreUpdateThread;
 import pl.edu.pja.s22687.model.GameModel;
 
 import javax.swing.*;
@@ -10,11 +12,11 @@ import java.awt.event.*;
 
 public class GameFrame extends JFrame {
     private GameModel model;
-    private Timer gameTimer;
     private JTable table;
     private JScrollPane scrollPane;
-
-
+    private JLabel scoreLabel;
+    private GameUpdateThread gameUpdateThread;
+    private ScoreUpdateThread scoreUpdateThread;
 
     public GameFrame(GameModel model) {
         this.model = model;
@@ -28,14 +30,29 @@ public class GameFrame extends JFrame {
         setFocusable(true);
         requestFocusInWindow();
 
-        gameTimer = new Timer(200, e -> model.updateGameState());
-        gameTimer.start();
+        scoreLabel = new JLabel("Score: " + model.getScore());
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        scoreLabel.setForeground(Color.WHITE);
+        add(scoreLabel, BorderLayout.NORTH);
+
+        gameUpdateThread = new GameUpdateThread(model, this);
+        gameUpdateThread.start();
+
+        scoreUpdateThread = new ScoreUpdateThread(model, this);
+        scoreUpdateThread.start();
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                gameUpdateThread.shutdown();
+                scoreUpdateThread.shutdown();
+            }
+        });
 
         addWindowFocusListener(new WindowAdapter() {
+            @Override
             public void windowGainedFocus(WindowEvent e) {
-                if (!gameTimer.isRunning()) {
-                    gameTimer.start();
-                }
+                requestFocusInWindow();
             }
         });
 
@@ -63,11 +80,10 @@ public class GameFrame extends JFrame {
         table.setShowGrid(false);
         table.setTableHeader(null);
         table.setCellSelectionEnabled(false);
+        table.setFocusable(false);
         table.setRowSelectionAllowed(false);
         table.setColumnSelectionAllowed(false);
         table.setFillsViewportHeight(true);
-
-        //dodaj żeby nie było przerwy między komórkami
         table.setIntercellSpacing(new Dimension(0, 0));
     }
 
@@ -111,5 +127,9 @@ public class GameFrame extends JFrame {
             default:
                 break;
         }
+    }
+
+    public void updateScore(int score) {
+        scoreLabel.setText("Score: " + score);
     }
 }

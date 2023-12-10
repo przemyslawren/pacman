@@ -1,6 +1,7 @@
 package pl.edu.pja.s22687.view;
 
 import pl.edu.pja.s22687.CellType;
+import pl.edu.pja.s22687.model.GameModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -12,7 +13,9 @@ public class MazeCellRenderer extends DefaultTableCellRenderer {
         super.getTableCellRendererComponent(
                 table, value, isSelected, hasFocus, row, column
         );
+        GameModel model = (GameModel) table.getModel();
 
+        boolean hasCoin = model.getCoins()[row][column];
 
         CellType cellType = (CellType) value;
         switch (cellType) {
@@ -21,8 +24,13 @@ public class MazeCellRenderer extends DefaultTableCellRenderer {
                 setBackground(new Color(73,77,176));
                 break;
             case CORRIDOR:
-                setText("");
-                setBackground(new Color(15,15,15));
+                if (hasCoin) {
+                    setText("C");
+                    setBackground(new Color(15,15,15));
+                } else {
+                    setText("");
+                    setBackground(new Color(15,15,15));
+                }
                 break;
             case COIN:
                 setText("");

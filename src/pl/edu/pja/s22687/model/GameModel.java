@@ -9,9 +9,11 @@ import java.util.*;
 import java.util.List;
 
 public class GameModel extends AbstractTableModel {
+    private int score = 0;
     private int rows;
     private int cols;
     private final CellType[][] maze;
+    private boolean[][] coins;
     private final boolean[][] visited;
     private final Random rand = new Random();
     private Point pacmanLocation;
@@ -22,8 +24,10 @@ public class GameModel extends AbstractTableModel {
         this.cols = cols;
         this.maze = new CellType[rows][cols];
         this.visited = new boolean[rows][cols];
+        this.coins = new boolean[rows][cols];
         initializeMaze();
         generateMaze();
+        placeCoins();
         placePacman();
     }
 
@@ -103,6 +107,12 @@ public class GameModel extends AbstractTableModel {
 
         if (canMove(nextLocation)) {
             maze[pacmanLocation.y][pacmanLocation.x] = CellType.CORRIDOR;
+
+            if (coins[nextLocation.y][nextLocation.x]) {
+                coins[nextLocation.y][nextLocation.x] = false;
+                addScore(10);
+            }
+
             pacmanLocation.setLocation(nextLocation);
             maze[pacmanLocation.y][pacmanLocation.x] = CellType.PACMAN;
         }
@@ -128,6 +138,28 @@ public class GameModel extends AbstractTableModel {
         if (currentDirection != Direction.NONE) {
             movePacman(currentDirection);
         }
+    }
+
+    private void placeCoins() {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                if (maze[row][col] == CellType.CORRIDOR) {
+                    coins[row][col] = true;
+                }
+            }
+        }
+    }
+
+    public boolean[][] getCoins() {
+        return coins;
+    }
+
+    public synchronized void addScore(int points) {
+        this.score += points;
+    }
+
+    public synchronized int getScore() {
+        return score;
     }
 
     @Override
