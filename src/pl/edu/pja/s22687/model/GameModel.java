@@ -1,5 +1,7 @@
 package pl.edu.pja.s22687.model;
 
+import pl.edu.pja.s22687.CellType;
+
 import javax.swing.table.AbstractTableModel;
 import java.util.*;
 
@@ -51,16 +53,17 @@ public class GameModel extends AbstractTableModel {
             int newRow = row + dir[0];
             int newCol = col + dir[1];
 
-            if (isValidMove(newRow, newCol)) {
-                // Przełam ścianę pomiędzy komórkami
+            if (canCreateCorridor(newRow, newCol)) {
                 maze[(row + newRow) / 2][(col + newCol) / 2] = CellType.CORRIDOR;
                 dfs(newRow, newCol);
             }
         }
     }
 
-    private boolean isValidMove(int row, int col) {
-        return row > 0 && col > 0 && row < rows - 1 && col < cols - 1 && !visited[row][col];
+    private boolean canCreateCorridor(int row, int col) {
+        // Uproszczona wersja warunku dla przełamania ściany
+        return row > 0 && col > 0 && row < rows - 1 && col < cols - 1
+                && (rand.nextDouble() < 0.5 || !visited[row][col]);
     }
 
     public CellType[][] getMaze() {

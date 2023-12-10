@@ -1,6 +1,6 @@
 package pl.edu.pja.s22687.view;
 
-import pl.edu.pja.s22687.model.CellType;
+import pl.edu.pja.s22687.CellType;
 import pl.edu.pja.s22687.model.GameModel;
 
 import javax.swing.*;

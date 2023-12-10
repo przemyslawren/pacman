@@ -1,6 +1,6 @@
 package pl.edu.pja.s22687.view;
 
-import pl.edu.pja.s22687.model.CellType;
+import pl.edu.pja.s22687.CellType;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -18,11 +18,11 @@ public class MazeCellRenderer extends DefaultTableCellRenderer {
         switch (cellType) {
             case WALL:
                 setText("");
-                setBackground(Color.BLACK);
+                setBackground(new Color(73,77,176));
                 break;
             case CORRIDOR:
                 setText("");
-                setBackground(Color.WHITE);
+                setBackground(new Color(15,15,15));
                 break;
             case COIN:
                 setText("");

@@ -1,14 +1,14 @@
 package pl.edu.pja.s22687.view;
 
-import pl.edu.pja.s22687.controller.GameController;
+import pl.edu.pja.s22687.GameManager;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class MainMenuFrame extends JFrame {
-    private GameController controller;
+    private GameManager controller;
 
-    public MainMenuFrame(GameController controller) {
+    public MainMenuFrame(GameManager controller) {
         this.controller = controller;
         initalizeUI();
     }

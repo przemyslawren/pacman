@@ -1,12 +1,12 @@
 package pl.edu.pja.s22687.view;
 
-import pl.edu.pja.s22687.controller.GameController;
+import pl.edu.pja.s22687.GameManager;
 import java.awt.*;
 
 public class SizeOptionsFrame {
-    private GameController controller;
+    private GameManager controller;
 
-    public SizeOptionsFrame(GameController controller, Frame owner) {
+    public SizeOptionsFrame(GameManager controller, Frame owner) {
         this.controller = controller;
         SizeOptionsDialog dialog = new SizeOptionsDialog(owner, controller);
         dialog.setVisible(true);
