@@ -15,6 +15,7 @@ public class GameModel extends AbstractTableModel {
     private final boolean[][] visited;
     private final Random rand = new Random();
     private Point pacmanLocation;
+    private Direction currentDirection = Direction.NONE;
 
     public GameModel(int rows, int cols) {
         this.rows = rows;
@@ -68,7 +69,7 @@ public class GameModel extends AbstractTableModel {
     private boolean canCreateCorridor(int row, int col) {
         // Uproszczona wersja warunku dla przełamania ściany
         return row > 0 && col > 0 && row < rows - 1 && col < cols - 1
-                && (rand.nextDouble() < 0.5 || !visited[row][col]);
+                && (rand.nextDouble() < 0.2 || !visited[row][col]);
     }
 
     private void placePacman() {
@@ -115,7 +116,19 @@ public class GameModel extends AbstractTableModel {
                 && maze[location.y][location.x] == CellType.CORRIDOR;
     }
 
+    public void setCurrentDirection(Direction currentDirection) {
+        this.currentDirection = currentDirection;
+    }
 
+    public Direction getCurrentDirection() {
+        return currentDirection;
+    }
+
+    public void updateGameState() {
+        if (currentDirection != Direction.NONE) {
+            movePacman(currentDirection);
+        }
+    }
 
     @Override
     public int getRowCount() {

@@ -6,15 +6,15 @@ import pl.edu.pja.s22687.model.GameModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 public class GameFrame extends JFrame {
     private GameModel model;
+    private Timer gameTimer;
     private JTable table;
     private JScrollPane scrollPane;
+
+
 
     public GameFrame(GameModel model) {
         this.model = model;
@@ -25,9 +25,20 @@ public class GameFrame extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
         initializeUI();
         resizeTableToFillWindow();
-
         setFocusable(true);
         requestFocusInWindow();
+
+        gameTimer = new Timer(200, e -> model.updateGameState());
+        gameTimer.start();
+
+        addWindowFocusListener(new WindowAdapter() {
+            public void windowGainedFocus(WindowEvent e) {
+                if (!gameTimer.isRunning()) {
+                    gameTimer.start();
+                }
+            }
+        });
+
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -86,16 +97,16 @@ public class GameFrame extends JFrame {
     private void handleKeyPress(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
-                model.movePacman(Direction.UP);
+                model.setCurrentDirection(Direction.UP);
                 break;
             case KeyEvent.VK_DOWN:
-                model.movePacman(Direction.DOWN);
+                model.setCurrentDirection(Direction.DOWN);
                 break;
             case KeyEvent.VK_LEFT:
-                model.movePacman(Direction.LEFT);
+                model.setCurrentDirection(Direction.LEFT);
                 break;
             case KeyEvent.VK_RIGHT:
-                model.movePacman(Direction.RIGHT);
+                model.setCurrentDirection(Direction.RIGHT);
                 break;
             default:
                 break;
