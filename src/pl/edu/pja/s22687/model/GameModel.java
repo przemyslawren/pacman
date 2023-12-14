@@ -161,16 +161,16 @@ public class GameModel extends AbstractTableModel {
         if (rows <= 20 && cols <= 20) {
             difficulty = 2;
         }
-        if (rows <= 40 && cols <= 40) {
+        else if (rows <= 40 && cols <= 40) {
             difficulty = 4;
         }
-        if (rows <= 60 && cols <= 60) {
+        else if (rows <= 60 && cols <= 60) {
             difficulty = 6;
         }
-        if (rows <= 80 && cols <= 80) {
+        else if (rows <= 80 && cols <= 80) {
             difficulty = 8;
         }
-        if (rows <= 100 && cols <= 100) {
+        else if (rows <= 100 && cols <= 100) {
             difficulty = 10;
         }
         return difficulty;
@@ -189,7 +189,7 @@ public class GameModel extends AbstractTableModel {
     }
 
     private void placeGhosts(int difficulty) {
-        for (int i = 0; i <= difficulty; i++) {
+        for (int i = 1; i <= difficulty; i++) {
             placeObject(CellType.GHOST);
         }
     }
