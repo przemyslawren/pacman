@@ -21,7 +21,6 @@ public class GameModel extends AbstractTableModel {
     private Point pacmanLocation;
     private Point ghostLocation;
     private Direction currentDirection = Direction.NONE;
-    private int difficulty = calculateDifficulty(rows, cols);
 
     public GameModel(int rows, int cols) {
         this.rows = rows;
@@ -34,7 +33,8 @@ public class GameModel extends AbstractTableModel {
         generateMaze();
         placeCoins();
         pacmanLocation = placeObject(CellType.PACMAN);
-        placeGhosts(difficulty);
+        placeGhosts(calculateDifficulty(rows, cols));
+        moveGhosts();
     }
 
     private void initializeMaze() {
@@ -80,18 +80,6 @@ public class GameModel extends AbstractTableModel {
         // Uproszczona wersja warunku dla przełamania ściany
         return row > 0 && col > 0 && row < rows - 1 && col < cols - 1
                 && (rand.nextDouble() < 0.2 || !visited[row][col]);
-    }
-
-    private void placePacman() {
-        Random rand = new Random();
-        int x, y;
-        do {
-            x = rand.nextInt(maze[0].length);
-            y = rand.nextInt(maze.length);
-        } while (maze[y][x] != CellType.CORRIDOR);
-
-        pacmanLocation = new Point(x, y);
-        maze[y][x] = CellType.PACMAN;
     }
 
     public void movePacman(Direction direction) {
@@ -157,23 +145,7 @@ public class GameModel extends AbstractTableModel {
     }
 
     private int calculateDifficulty(int rows, int cols) {
-        int difficulty = 0;
-        if (rows <= 20 && cols <= 20) {
-            difficulty = 2;
-        }
-        else if (rows <= 40 && cols <= 40) {
-            difficulty = 4;
-        }
-        else if (rows <= 60 && cols <= 60) {
-            difficulty = 6;
-        }
-        else if (rows <= 80 && cols <= 80) {
-            difficulty = 8;
-        }
-        else if (rows <= 100 && cols <= 100) {
-            difficulty = 10;
-        }
-        return difficulty;
+        return (rows + cols) / 10;
     }
 
     public boolean[][] getCoins() {
@@ -191,6 +163,57 @@ public class GameModel extends AbstractTableModel {
     private void placeGhosts(int difficulty) {
         for (int i = 1; i <= difficulty; i++) {
             placeObject(CellType.GHOST);
+        }
+    }
+
+    private void moveGhosts() {
+        for (int i = 0; i < ghosts.length; i++) {
+            for (int j = 0; j < ghosts[i].length; j++) {
+                if (ghosts[i][j]) {
+                    ghosts[i][j] = false;
+                    maze[i][j] = CellType.CORRIDOR;
+                }
+            }
+        }
+        for (int i = 0; i < ghosts.length; i++) {
+            for (int j = 0; j < ghosts[i].length; j++) {
+                if (maze[i][j] == CellType.GHOST) {
+                    ghosts[i][j] = true;
+                }
+            }
+        }
+        for (int i = 0; i < ghosts.length; i++) {
+            for (int j = 0; j < ghosts[i].length; j++) {
+                if (ghosts[i][j]) {
+                    ghostLocation = new Point(j, i);
+                    maze[i][j] = CellType.GHOST;
+                    moveGhost(ghostLocation);
+                }
+            }
+        }
+    }
+
+    private void moveGhost(Point ghostLocation) {
+        Point nextLocation = new Point(ghostLocation);
+        int direction = rand.nextInt(4);
+        switch (direction) {
+            case 0:
+                nextLocation.y--;
+                break;
+            case 1:
+                nextLocation.y++;
+                break;
+            case 2:
+                nextLocation.x--;
+                break;
+            case 3:
+                nextLocation.x++;
+                break;
+        }
+
+        if (canMove(nextLocation)) {
+            maze[ghostLocation.y][ghostLocation.x] = CellType.CORRIDOR;
+            maze[nextLocation.y][nextLocation.x] = CellType.GHOST;
         }
     }
 
