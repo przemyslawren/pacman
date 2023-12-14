@@ -13,11 +13,15 @@ public class GameModel extends AbstractTableModel {
     private int rows;
     private int cols;
     private final CellType[][] maze;
-    private boolean[][] coins;
+
     private final boolean[][] visited;
+    private boolean[][] coins;
+    private boolean[][] ghosts;
     private final Random rand = new Random();
     private Point pacmanLocation;
+    private Point ghostLocation;
     private Direction currentDirection = Direction.NONE;
+    private int difficulty = calculateDifficulty(rows, cols);
 
     public GameModel(int rows, int cols) {
         this.rows = rows;
@@ -25,10 +29,12 @@ public class GameModel extends AbstractTableModel {
         this.maze = new CellType[rows][cols];
         this.visited = new boolean[rows][cols];
         this.coins = new boolean[rows][cols];
+        this.ghosts = new boolean[rows][cols];
         initializeMaze();
         generateMaze();
         placeCoins();
-        placePacman();
+        pacmanLocation = placeObject(CellType.PACMAN);
+        placeGhosts(difficulty);
     }
 
     private void initializeMaze() {
@@ -150,6 +156,26 @@ public class GameModel extends AbstractTableModel {
         }
     }
 
+    private int calculateDifficulty(int rows, int cols) {
+        int difficulty = 0;
+        if (rows <= 20 && cols <= 20) {
+            difficulty = 2;
+        }
+        if (rows <= 40 && cols <= 40) {
+            difficulty = 4;
+        }
+        if (rows <= 60 && cols <= 60) {
+            difficulty = 6;
+        }
+        if (rows <= 80 && cols <= 80) {
+            difficulty = 8;
+        }
+        if (rows <= 100 && cols <= 100) {
+            difficulty = 10;
+        }
+        return difficulty;
+    }
+
     public boolean[][] getCoins() {
         return coins;
     }
@@ -160,6 +186,28 @@ public class GameModel extends AbstractTableModel {
 
     public synchronized int getScore() {
         return score;
+    }
+
+    private void placeGhosts(int difficulty) {
+        for (int i = 0; i <= difficulty; i++) {
+            placeObject(CellType.GHOST);
+        }
+    }
+
+    public boolean[][] getGhosts() {
+        return ghosts;
+    }
+    public Point placeObject(CellType type) {
+        Random rand = new Random();
+        int x, y;
+        do {
+            x = rand.nextInt(maze[0].length);
+            y = rand.nextInt(maze.length);
+        } while (maze[y][x] != CellType.CORRIDOR);
+
+        maze[y][x] = type;
+        System.out.println("Object placed at: " + x + ", " + y);
+        return new Point(x, y);
     }
 
     @Override

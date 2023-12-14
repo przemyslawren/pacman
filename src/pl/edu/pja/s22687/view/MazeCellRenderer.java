@@ -41,8 +41,7 @@ public class MazeCellRenderer extends DefaultTableCellRenderer {
                 setBackground(Color.ORANGE);
                 break;
             case GHOST:
-                setText("");
-                setBackground(Color.BLUE);
+                    setBackground(Color.BLUE);
                 break;
             default:
                 break;
