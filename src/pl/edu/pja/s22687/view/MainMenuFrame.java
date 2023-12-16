@@ -10,10 +10,10 @@ public class MainMenuFrame extends JFrame {
 
     public MainMenuFrame(GameManager controller) {
         this.controller = controller;
-        initalizeUI();
+        initializeUI();
     }
 
-        private void initalizeUI() {
+        private void initializeUI() {
             setTitle("Pacman");
             setDefaultLookAndFeelDecorated(true);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -22,8 +22,20 @@ public class MainMenuFrame extends JFrame {
             setResizable(true);
             setIconImage(new ImageIcon("src/pl/edu/pja/s22687/resources/ghost.png").getImage());
 
-            JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 200));
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
             panel.setBackground(Color.DARK_GRAY);
+
+            JPanel logoPanel = new JPanel();
+            logoPanel.setBackground(Color.DARK_GRAY);
+            logoPanel.add(new JLabel(new ImageIcon("src/pl/edu/pja/s22687/resources/pacman_logo.png")));
+            panel.add(logoPanel);
+
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 50));
+            buttonPanel.setBackground(Color.DARK_GRAY);
+
+            panel.add(buttonPanel);
 
             JButton newGameButton = new JButton("New Game");
             JButton highScoresButton = new JButton("High Scores");
@@ -33,12 +45,35 @@ public class MainMenuFrame extends JFrame {
             highScoresButton.addActionListener(e -> controller.showHighScores());
             exitButton.addActionListener(e -> controller.exitGame());
 
-            panel.add(newGameButton);
-            panel.add(highScoresButton);
-            panel.add(exitButton);
-            panel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            setButtonLooks(newGameButton);
+            setButtonLooks(highScoresButton);
+            setButtonLooks(exitButton);
+
+            buttonPanel.add(newGameButton);
+            buttonPanel.add(highScoresButton);
+            buttonPanel.add(exitButton);
             add(panel);
 
             setVisible(true);
         }
+
+    private void setButtonLooks(JButton button) {
+        button.setBackground(Color.DARK_GRAY);
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 20));
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(Color.GRAY);
+                button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(Color.DARK_GRAY);
+            }
+        });
+    }
 }
