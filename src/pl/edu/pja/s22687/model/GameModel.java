@@ -173,7 +173,9 @@ public class GameModel extends AbstractTableModel {
     }
 
     private int calculateDifficulty(int rows, int cols) {
-        return 2;
+        int totalCells = rows * cols;
+        int difficulty = totalCells / 50;
+        return Math.max(2, difficulty);
     }
 
     public boolean[][] getCoins() {
@@ -218,7 +220,7 @@ public class GameModel extends AbstractTableModel {
         }
     }
 
-    private void moveGhost(int row, int col) {
+    private synchronized void moveGhost(int row, int col) {
         List<Direction> possibleDirections = getPossibleDirections(row, col);
         if (possibleDirections.size() > 0) {
             Direction dir = possibleDirections.get(rand.nextInt(possibleDirections.size()));
@@ -257,7 +259,7 @@ public class GameModel extends AbstractTableModel {
         return row >= 0 && row < rows && col >= 0 && col < cols && maze[row][col] != CellType.WALL;
     }
 
-    public boolean areAllCoinsCollected() {
+    public synchronized boolean areAllCoinsCollected() {
         for (int row = 0; row < coins.length; row++) {
             for (int col = 0; col < coins[0].length; col++) {
                 if (coins[row][col]) {
