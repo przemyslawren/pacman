@@ -19,7 +19,7 @@ public class GameModel extends AbstractTableModel {
     private boolean[][] coins;
     private boolean[][] ghosts;
     private final Random rand = new Random();
-    private Point pacmanLocation;
+    private final Point pacmanLocation;
     private Direction currentDirection = Direction.NONE;
 
     public GameModel(int rows, int cols) {
@@ -27,7 +27,7 @@ public class GameModel extends AbstractTableModel {
         initializeMaze();
         generateMaze();
         placeCoins();
-        pacmanLocation = placePacman(CellType.PACMAN);
+        pacmanLocation = placePacman();
         placeGhosts(calculateDifficulty(rows, cols));
         moveGhosts();
     }
@@ -86,7 +86,7 @@ public class GameModel extends AbstractTableModel {
                 && (rand.nextDouble() < 0.2 || !visited[row][col]);
     }
 
-    public Point placePacman(CellType Pacman) {
+    public Point placePacman() {
         Random rand = new Random();
         int x, y;
         do {
@@ -101,20 +101,7 @@ public class GameModel extends AbstractTableModel {
 
     public synchronized void movePacman(Direction direction) {
         Point nextLocation = new Point(pacmanLocation);
-        switch (direction) {
-            case UP:
-                nextLocation.y--;
-                break;
-            case DOWN:
-                nextLocation.y++;
-                break;
-            case LEFT:
-                nextLocation.x--;
-                break;
-            case RIGHT:
-                nextLocation.x++;
-                break;
-        }
+        moveToNextLocation(direction, nextLocation);
 
         if (canMove(nextLocation)) {
             maze[pacmanLocation.y][pacmanLocation.x] = CellType.CORRIDOR;
@@ -129,6 +116,23 @@ public class GameModel extends AbstractTableModel {
         }
 
         fireTableDataChanged();
+    }
+
+    private void moveToNextLocation(Direction direction, Point nextLocation) {
+        switch (direction) {
+            case UP:
+                nextLocation.y--;
+                break;
+            case DOWN:
+                nextLocation.y++;
+                break;
+            case LEFT:
+                nextLocation.x--;
+                break;
+            case RIGHT:
+                nextLocation.x++;
+                break;
+        }
     }
 
     private boolean canMove(Point location) {
@@ -222,7 +226,7 @@ public class GameModel extends AbstractTableModel {
 
     private synchronized void moveGhost(int row, int col) {
         List<Direction> possibleDirections = getPossibleDirections(row, col);
-        if (possibleDirections.size() > 0) {
+        if (!possibleDirections.isEmpty()) {
             Direction dir = possibleDirections.get(rand.nextInt(possibleDirections.size()));
             Point nextLocation = calculateNextLocation(row, col, dir);
             ghosts[nextLocation.y][nextLocation.x] = true;
@@ -246,12 +250,7 @@ public class GameModel extends AbstractTableModel {
 
     private Point calculateNextLocation(int row, int col, Direction dir) {
         Point nextLocation = new Point(row, col);
-        switch (dir) {
-            case UP:    nextLocation.y--; break;
-            case DOWN:  nextLocation.y++; break;
-            case LEFT:  nextLocation.x--; break;
-            case RIGHT: nextLocation.x++; break;
-        }
+        moveToNextLocation(dir, nextLocation);
         return nextLocation;
     }
 
@@ -260,9 +259,9 @@ public class GameModel extends AbstractTableModel {
     }
 
     public synchronized boolean areAllCoinsCollected() {
-        for (int row = 0; row < coins.length; row++) {
+        for (boolean[] coin : coins) {
             for (int col = 0; col < coins[0].length; col++) {
-                if (coins[row][col]) {
+                if (coin[col]) {
                     return false;  // Znaleziono monetę, która jeszcze nie została zebrana
                 }
             }

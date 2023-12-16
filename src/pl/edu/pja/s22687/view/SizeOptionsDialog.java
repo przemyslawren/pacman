@@ -60,20 +60,10 @@ public class SizeOptionsDialog extends JDialog {
             }
         });
 
-        cancelButton.addActionListener(e -> {
-            dispose();
-        });
+        cancelButton.addActionListener(e -> dispose());
     }
 
     public boolean isConfirmed() {
         return confirmed;
-    }
-
-    public int getRows() {
-        return rows;
-    }
-
-    public int getColumns() {
-        return columns;
     }
 }

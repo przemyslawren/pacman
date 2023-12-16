@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MainMenuFrame extends JFrame {
-    private GameManager controller;
+    private final GameManager controller;
 
     public MainMenuFrame(GameManager controller) {
         this.controller = controller;

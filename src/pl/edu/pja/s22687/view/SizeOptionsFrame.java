@@ -4,7 +4,7 @@ import pl.edu.pja.s22687.GameManager;
 import java.awt.*;
 
 public class SizeOptionsFrame {
-    private GameManager controller;
+    private final GameManager controller;
 
     public SizeOptionsFrame(GameManager controller, Frame owner) {
         this.controller = controller;

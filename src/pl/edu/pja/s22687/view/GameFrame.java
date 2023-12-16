@@ -8,13 +8,13 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class GameFrame extends JFrame {
-    private GameModel model;
-    private JTable table;
-    private JScrollPane scrollPane;
-    private JLabel scoreLabel;
-    private GameUpdateThread gameUpdateThread;
-    private GhostUpdateThread ghostUpdateThread;
-    private ScoreUpdateThread scoreUpdateThread;
+    private final GameModel model;
+    private final JTable table;
+    private final JScrollPane scrollPane;
+    private final JLabel scoreLabel;
+    private final GameUpdateThread gameUpdateThread;
+    private final GhostUpdateThread ghostUpdateThread;
+    private final ScoreUpdateThread scoreUpdateThread;
 
     public GameFrame(GameModel model) {
         this.model = model;

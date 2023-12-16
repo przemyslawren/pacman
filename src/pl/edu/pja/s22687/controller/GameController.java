@@ -9,7 +9,7 @@ import pl.edu.pja.s22687.view.SizeOptionsFrame;
 
 public class GameController implements GameManager {
     private GameModel model;
-    private MainMenuFrame mainMenuFrame;
+    private final MainMenuFrame mainMenuFrame;
 
     public GameController() {
         this.mainMenuFrame = new MainMenuFrame(this);
