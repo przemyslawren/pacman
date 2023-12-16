@@ -15,8 +15,6 @@ public class MazeCellRenderer extends DefaultTableCellRenderer {
         );
         GameModel model = (GameModel) table.getModel();
 
-        boolean hasCoin = model.getCoins()[row][column];
-
         CellType cellType = (CellType) value;
         switch (cellType) {
             case WALL:
@@ -24,7 +22,7 @@ public class MazeCellRenderer extends DefaultTableCellRenderer {
                 setBackground(new Color(73,77,176));
                 break;
             case CORRIDOR:
-                if (hasCoin) {
+                if (model.getCoins()[row][column]) {
                     setText("C");
                     setBackground(new Color(15,15,15));
                 } else {

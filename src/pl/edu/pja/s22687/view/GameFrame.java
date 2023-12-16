@@ -1,9 +1,6 @@
 package pl.edu.pja.s22687.view;
 
-import pl.edu.pja.s22687.CellType;
-import pl.edu.pja.s22687.Direction;
-import pl.edu.pja.s22687.GameUpdateThread;
-import pl.edu.pja.s22687.ScoreUpdateThread;
+import pl.edu.pja.s22687.*;
 import pl.edu.pja.s22687.model.GameModel;
 
 import javax.swing.*;
@@ -16,6 +13,7 @@ public class GameFrame extends JFrame {
     private JScrollPane scrollPane;
     private JLabel scoreLabel;
     private GameUpdateThread gameUpdateThread;
+    private GhostUpdateThread ghostUpdateThread;
     private ScoreUpdateThread scoreUpdateThread;
 
     public GameFrame(GameModel model) {
@@ -38,6 +36,9 @@ public class GameFrame extends JFrame {
         gameUpdateThread = new GameUpdateThread(model, this);
         gameUpdateThread.start();
 
+        ghostUpdateThread = new GhostUpdateThread(model, this);
+        ghostUpdateThread.start();
+
         scoreUpdateThread = new ScoreUpdateThread(model, this);
         scoreUpdateThread.start();
 
@@ -45,6 +46,7 @@ public class GameFrame extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 gameUpdateThread.shutdown();
+                ghostUpdateThread.shutdown();
                 scoreUpdateThread.shutdown();
             }
         });

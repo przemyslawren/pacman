@@ -3,6 +3,7 @@ package pl.edu.pja.s22687.model;
 import pl.edu.pja.s22687.CellType;
 import pl.edu.pja.s22687.Direction;
 
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.util.*;
@@ -12,29 +13,32 @@ public class GameModel extends AbstractTableModel {
     private int score = 0;
     private int rows;
     private int cols;
-    private final CellType[][] maze;
+    private CellType[][] maze;
 
-    private final boolean[][] visited;
+    private boolean[][] visited;
     private boolean[][] coins;
     private boolean[][] ghosts;
     private final Random rand = new Random();
     private Point pacmanLocation;
-    private Point ghostLocation;
     private Direction currentDirection = Direction.NONE;
 
     public GameModel(int rows, int cols) {
+        initializeFields(rows, cols);
+        initializeMaze();
+        generateMaze();
+        placeCoins();
+        pacmanLocation = placePacman(CellType.PACMAN);
+        placeGhosts(calculateDifficulty(rows, cols));
+        moveGhosts();
+    }
+
+    private void initializeFields(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
         this.maze = new CellType[rows][cols];
         this.visited = new boolean[rows][cols];
         this.coins = new boolean[rows][cols];
         this.ghosts = new boolean[rows][cols];
-        initializeMaze();
-        generateMaze();
-        placeCoins();
-        pacmanLocation = placeObject(CellType.PACMAN);
-        placeGhosts(calculateDifficulty(rows, cols));
-        moveGhosts();
     }
 
     private void initializeMaze() {
@@ -82,7 +86,20 @@ public class GameModel extends AbstractTableModel {
                 && (rand.nextDouble() < 0.2 || !visited[row][col]);
     }
 
-    public void movePacman(Direction direction) {
+    public Point placePacman(CellType Pacman) {
+        Random rand = new Random();
+        int x, y;
+        do {
+            x = rand.nextInt(maze[0].length);
+            y = rand.nextInt(maze.length);
+        } while (maze[y][x] != CellType.CORRIDOR);
+
+        maze[y][x] = CellType.PACMAN;
+        System.out.println("Pacman placed at: " + x + ", " + y);
+        return new Point(x, y);
+    }
+
+    public synchronized void movePacman(Direction direction) {
         Point nextLocation = new Point(pacmanLocation);
         switch (direction) {
             case UP:
@@ -131,7 +148,18 @@ public class GameModel extends AbstractTableModel {
     public void updateGameState() {
         if (currentDirection != Direction.NONE) {
             movePacman(currentDirection);
+            if (areAllCoinsCollected()) {
+                // Wyświetl komunikat o wygranej
+                JOptionPane.showMessageDialog(null, "Wygrałeś! Twój wynik to: " + getScore(), "Koniec gry", JOptionPane.INFORMATION_MESSAGE);
+                // Zapisz wynik
+                saveHighScore(getScore());
+                // Resetuj grę lub zamknij okno gry
+            }
         }
+    }
+
+    private void saveHighScore(int score) {
+
     }
 
     private void placeCoins() {
@@ -145,7 +173,7 @@ public class GameModel extends AbstractTableModel {
     }
 
     private int calculateDifficulty(int rows, int cols) {
-        return (rows + cols) / 10;
+        return 2;
     }
 
     public boolean[][] getCoins() {
@@ -160,67 +188,7 @@ public class GameModel extends AbstractTableModel {
         return score;
     }
 
-    private void placeGhosts(int difficulty) {
-        for (int i = 1; i <= difficulty; i++) {
-            placeObject(CellType.GHOST);
-        }
-    }
-
-    private void moveGhosts() {
-        for (int i = 0; i < ghosts.length; i++) {
-            for (int j = 0; j < ghosts[i].length; j++) {
-                if (ghosts[i][j]) {
-                    ghosts[i][j] = false;
-                    maze[i][j] = CellType.CORRIDOR;
-                }
-            }
-        }
-        for (int i = 0; i < ghosts.length; i++) {
-            for (int j = 0; j < ghosts[i].length; j++) {
-                if (maze[i][j] == CellType.GHOST) {
-                    ghosts[i][j] = true;
-                }
-            }
-        }
-        for (int i = 0; i < ghosts.length; i++) {
-            for (int j = 0; j < ghosts[i].length; j++) {
-                if (ghosts[i][j]) {
-                    ghostLocation = new Point(j, i);
-                    maze[i][j] = CellType.GHOST;
-                    moveGhost(ghostLocation);
-                }
-            }
-        }
-    }
-
-    private void moveGhost(Point ghostLocation) {
-        Point nextLocation = new Point(ghostLocation);
-        int direction = rand.nextInt(4);
-        switch (direction) {
-            case 0:
-                nextLocation.y--;
-                break;
-            case 1:
-                nextLocation.y++;
-                break;
-            case 2:
-                nextLocation.x--;
-                break;
-            case 3:
-                nextLocation.x++;
-                break;
-        }
-
-        if (canMove(nextLocation)) {
-            maze[ghostLocation.y][ghostLocation.x] = CellType.CORRIDOR;
-            maze[nextLocation.y][nextLocation.x] = CellType.GHOST;
-        }
-    }
-
-    public boolean[][] getGhosts() {
-        return ghosts;
-    }
-    public Point placeObject(CellType type) {
+    private void placeGhost() {
         Random rand = new Random();
         int x, y;
         do {
@@ -228,10 +196,78 @@ public class GameModel extends AbstractTableModel {
             y = rand.nextInt(maze.length);
         } while (maze[y][x] != CellType.CORRIDOR);
 
-        maze[y][x] = type;
-        System.out.println("Object placed at: " + x + ", " + y);
-        return new Point(x, y);
+        maze[y][x] = CellType.GHOST;
+        ghosts[y][x] = true;
     }
+
+    private void placeGhosts(int difficulty) {
+        for (int i = 1; i <= difficulty; i++) {
+            placeGhost();
+        }
+    }
+
+    public synchronized void moveGhosts() {
+        for (int row = 0; row < ghosts.length; row++) {
+            for (int col = 0; col < ghosts[0].length; col++) {
+                if (ghosts[row][col]) {
+                    ghosts[row][col] = false;
+                    maze[row][col] = CellType.CORRIDOR;
+                    moveGhost(row, col);
+                }
+            }
+        }
+    }
+
+    private void moveGhost(int row, int col) {
+        List<Direction> possibleDirections = getPossibleDirections(row, col);
+        if (possibleDirections.size() > 0) {
+            Direction dir = possibleDirections.get(rand.nextInt(possibleDirections.size()));
+            Point nextLocation = calculateNextLocation(row, col, dir);
+            ghosts[nextLocation.y][nextLocation.x] = true;
+            maze[nextLocation.y][nextLocation.x] = CellType.GHOST;
+        } else {
+            ghosts[row][col] = true;
+            maze[row][col] = CellType.GHOST;
+        }
+    }
+
+    private List<Direction> getPossibleDirections(int row, int col) {
+        List<Direction> possibleDirections = new ArrayList<>();
+        for (Direction dir : Direction.values()) {
+            Point nextLocation = calculateNextLocation(row, col, dir);
+            if (canMove(nextLocation.y, nextLocation.x)) {
+                possibleDirections.add(dir);
+            }
+        }
+        return possibleDirections;
+    }
+
+    private Point calculateNextLocation(int row, int col, Direction dir) {
+        Point nextLocation = new Point(row, col);
+        switch (dir) {
+            case UP:    nextLocation.y--; break;
+            case DOWN:  nextLocation.y++; break;
+            case LEFT:  nextLocation.x--; break;
+            case RIGHT: nextLocation.x++; break;
+        }
+        return nextLocation;
+    }
+
+    private boolean canMove(int row, int col) {
+        return row >= 0 && row < rows && col >= 0 && col < cols && maze[row][col] != CellType.WALL;
+    }
+
+    public boolean areAllCoinsCollected() {
+        for (int row = 0; row < coins.length; row++) {
+            for (int col = 0; col < coins[0].length; col++) {
+                if (coins[row][col]) {
+                    return false;  // Znaleziono monetę, która jeszcze nie została zebrana
+                }
+            }
+        }
+        return true;  // Wszystkie monety zostały zebrane
+    }
+
 
     @Override
     public int getRowCount() {
