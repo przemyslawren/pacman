@@ -1,6 +1,7 @@
 package pl.edu.pja.s22687.view;
 
 import pl.edu.pja.s22687.GameManager;
+import pl.edu.pja.s22687.controller.GameController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +13,7 @@ public class SizeOptionsDialog extends JDialog {
     private int columns;
     private boolean confirmed = false;
 
-    public SizeOptionsDialog(Frame owner, GameManager controller) {
+    public SizeOptionsDialog(Frame owner, GameController controller) {
         super(owner, "Size options", true);
         initializeUI();
         setupActions(controller);
@@ -60,8 +61,12 @@ public class SizeOptionsDialog extends JDialog {
             }
         });
 
-        cancelButton.addActionListener(e -> dispose());
+        cancelButton.addActionListener(e -> {
+            confirmed = false;
+            this.dispose();
+        });
     }
+
 
     public boolean isConfirmed() {
         return confirmed;

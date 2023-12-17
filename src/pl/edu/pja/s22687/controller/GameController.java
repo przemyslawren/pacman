@@ -25,14 +25,13 @@ public class GameController implements GameManager {
 
     @Override
     public void showHighScores() {
-        new HighScoresFrame();
+        new HighScoresFrame(this);
         this.mainMenuFrame.setVisible(false);
     }
 
     @Override
     public void showSizeOptions() {
         new SizeOptionsFrame(this, mainMenuFrame);
-        mainMenuFrame.setVisible(false);
     }
 
     @Override
@@ -42,6 +41,10 @@ public class GameController implements GameManager {
 
     @Override
     public void returnToMainMenu() {
+        this.mainMenuFrame.setVisible(true);
+    }
+
+    public void endGame() {
         gameFrame.quitGame();
     }
 }

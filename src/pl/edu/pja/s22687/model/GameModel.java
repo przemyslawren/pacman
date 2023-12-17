@@ -303,7 +303,7 @@ public class GameModel extends AbstractTableModel {
                 highScores.add(new HighScore(playerName, getScore()));
                 HighScoresManager.saveHighScores(highScores);
             }
-            controller.returnToMainMenu();
+            controller.endGame();
         });
     }
 

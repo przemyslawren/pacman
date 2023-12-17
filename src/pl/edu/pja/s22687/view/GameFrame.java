@@ -29,7 +29,7 @@ public class GameFrame extends JFrame {
         table.setDefaultRenderer(CellType.class, new MazeCellRenderer());
         configureTable(table);
         add(scrollPane, BorderLayout.CENTER);
-        initializeUI();
+
         resizeTableToFillWindow();
         setFocusable(true);
         requestFocusInWindow();
@@ -37,10 +37,11 @@ public class GameFrame extends JFrame {
 
         scoreLabel = new JLabel("Score: " + model.getScore());
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        scoreLabel.setForeground(Color.WHITE);
+        scoreLabel.setForeground(Color.BLACK);
         scoreLabel.setBackground(new Color(15, 15, 15));
         scoreLabel.setHorizontalAlignment(JLabel.CENTER);
         add(scoreLabel, BorderLayout.NORTH);
+        initializeUI();
 
         gameUpdateThread = new GameUpdateThread(model, this);
         ghostUpdateThread = new GhostUpdateThread(model, this);

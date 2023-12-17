@@ -16,6 +16,12 @@ public class HighScoresManager {
         }
     }
 
+    public static void remove(HighScore highScore) {
+        List<HighScore> highScores = loadHighScores();
+        highScores.remove(highScore);
+        saveHighScores(highScores);
+    }
+
     public static List<HighScore> loadHighScores() {
         File file = new File(FILE_PATH);
         if (file.exists()) {
