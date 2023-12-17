@@ -1,7 +1,9 @@
-package pl.edu.pja.s22687;
+package pl.edu.pja.s22687.threads;
 
 import pl.edu.pja.s22687.model.GameModel;
 import pl.edu.pja.s22687.view.GameFrame;
+
+import javax.swing.*;
 
 public class GameUpdateThread extends Thread {
     private final GameModel model;
@@ -17,7 +19,7 @@ public class GameUpdateThread extends Thread {
     public void run() {
         while (running) {
             if(frame.isActive()) {
-                model.updateGameState();
+                SwingUtilities.invokeLater(() -> model.updateGameState());;
             }
             try {
                 Thread.sleep(200);

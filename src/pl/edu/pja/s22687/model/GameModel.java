@@ -21,6 +21,10 @@ public class GameModel extends AbstractTableModel {
     private final Random rand = new Random();
     private final Point pacmanLocation;
     private Direction currentDirection = Direction.NONE;
+    private ImageIcon ghostleftIcon;
+    private ImageIcon ghostrightIcon;
+    private boolean isLeftIconActive = true;
+    private boolean isPacmanMouthOpen = true;
 
     public GameModel(int rows, int cols) {
         initializeFields(rows, cols);
@@ -30,6 +34,7 @@ public class GameModel extends AbstractTableModel {
         pacmanLocation = placePacman();
         placeGhosts(calculateDifficulty(rows, cols));
         moveGhosts();
+        loadGhostIcons();
     }
 
     private void initializeFields(int rows, int cols) {
@@ -160,6 +165,7 @@ public class GameModel extends AbstractTableModel {
                 // Resetuj grę lub zamknij okno gry
             }
         }
+        fireTableDataChanged();
     }
 
     private void saveHighScore(int score) {
@@ -258,6 +264,14 @@ public class GameModel extends AbstractTableModel {
         return row >= 0 && row < rows && col >= 0 && col < cols && maze[row][col] != CellType.WALL;
     }
 
+    public void togglePacmanMouth() {
+        isPacmanMouthOpen = !isPacmanMouthOpen;
+    }
+
+    public boolean isPacmanMouthOpen() {
+        return isPacmanMouthOpen;
+    }
+
     public synchronized boolean areAllCoinsCollected() {
         for (boolean[] coin : coins) {
             for (int col = 0; col < coins[0].length; col++) {
@@ -269,13 +283,23 @@ public class GameModel extends AbstractTableModel {
         return true;  // Wszystkie monety zostały zebrane
     }
 
+    private void loadGhostIcons() {
+        ghostleftIcon = new ImageIcon("src/pl/edu/pja/s22687/resources/ghost/ghost_left.jpg");
+        ghostrightIcon = new ImageIcon("src/pl/edu/pja/s22687/resources/ghost/ghost_right.jpg");
+    }
+
+    public ImageIcon getCurrentGhostIcon() {
+        return isLeftIconActive ? ghostleftIcon : ghostrightIcon;
+    }
+
+    public void toggleGhostIcon() {
+        isLeftIconActive = !isLeftIconActive;
+    }
 
     @Override
     public int getRowCount() {
         return maze.length;
     }
-
-
 
     @Override
     public int getColumnCount() {
@@ -290,5 +314,9 @@ public class GameModel extends AbstractTableModel {
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         return CellType.class;
+    }
+
+    public Direction getPacmanDirection() {
+        return currentDirection;
     }
 }

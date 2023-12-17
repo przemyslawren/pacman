@@ -52,8 +52,8 @@ public class SizeOptionsDialog extends JDialog {
                     JOptionPane.showMessageDialog(this, "The size must be between 10-100 x 10-100", "Wrong size", JOptionPane.ERROR_MESSAGE);
                 } else {
                     confirmed = true;
+                    this.dispose();
                     controller.startNewGame(rows, columns);
-                    dispose();
                 }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "The size of maze must be a number", "Wrong type", JOptionPane.ERROR_MESSAGE);

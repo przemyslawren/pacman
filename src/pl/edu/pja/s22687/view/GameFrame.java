@@ -2,6 +2,7 @@ package pl.edu.pja.s22687.view;
 
 import pl.edu.pja.s22687.*;
 import pl.edu.pja.s22687.model.GameModel;
+import pl.edu.pja.s22687.threads.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,15 +10,19 @@ import java.awt.event.*;
 
 public class GameFrame extends JFrame {
     private final GameModel model;
+    private final MainMenuFrame mainMenuFrame;
     private final JTable table;
     private final JScrollPane scrollPane;
     private final JLabel scoreLabel;
     private final GameUpdateThread gameUpdateThread;
     private final GhostUpdateThread ghostUpdateThread;
     private final ScoreUpdateThread scoreUpdateThread;
+    private final GhostAnimationThread ghostAnimationThread;
+    private final PacmanAnimationThread pacmanAnimationThread;
 
-    public GameFrame(GameModel model) {
+    public GameFrame(GameModel model, MainMenuFrame mainMenuFrame) {
         this.model = model;
+        this.mainMenuFrame = mainMenuFrame;
         this.table = new JTable(model);
         this.scrollPane = new JScrollPane(table);
         table.setDefaultRenderer(CellType.class, new MazeCellRenderer());
@@ -27,27 +32,26 @@ public class GameFrame extends JFrame {
         resizeTableToFillWindow();
         setFocusable(true);
         requestFocusInWindow();
+        setupKeyBindings();
 
         scoreLabel = new JLabel("Score: " + model.getScore());
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
         scoreLabel.setForeground(Color.WHITE);
+        scoreLabel.setBackground(new Color(15, 15, 15));
+        scoreLabel.setHorizontalAlignment(JLabel.CENTER);
         add(scoreLabel, BorderLayout.NORTH);
 
         gameUpdateThread = new GameUpdateThread(model, this);
-        gameUpdateThread.start();
-
         ghostUpdateThread = new GhostUpdateThread(model, this);
-        ghostUpdateThread.start();
-
         scoreUpdateThread = new ScoreUpdateThread(model, this);
-        scoreUpdateThread.start();
+        ghostAnimationThread = new GhostAnimationThread(model, table);
+        pacmanAnimationThread = new PacmanAnimationThread(model);
+        startThreads();
 
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                gameUpdateThread.shutdown();
-                ghostUpdateThread.shutdown();
-                scoreUpdateThread.shutdown();
+                shutdownThreads();
             }
         });
 
@@ -72,7 +76,7 @@ public class GameFrame extends JFrame {
         setDefaultLookAndFeelDecorated(true);
         setSize(1024, 768);
         setLocationRelativeTo(null);
-        setIconImage(new ImageIcon("src/pl/edu/pja/s22687/resources/ghost.png").getImage());
+        setIconImage(new ImageIcon("src/pl/edu/pja/s22687/resources/ghost_logo.png").getImage());
         setVisible(true);
     }
 
@@ -131,7 +135,42 @@ public class GameFrame extends JFrame {
         }
     }
 
+    private void setupKeyBindings() {
+        InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = getRootPane().getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), "QuitGame");
+        actionMap.put("QuitGame", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                quitGame();
+            }
+        });
+    }
+
+    private void quitGame() {
+        shutdownThreads();
+        this.dispose();
+        mainMenuFrame.setVisible(true);
+    }
+
     public void updateScore(int score) {
         scoreLabel.setText("Score: " + score);
+    }
+
+    private void startThreads() {
+        gameUpdateThread.start();
+        ghostUpdateThread.start();
+        scoreUpdateThread.start();
+        ghostAnimationThread.start();
+        pacmanAnimationThread.start();
+    }
+
+    public void shutdownThreads() {
+        gameUpdateThread.shutdown();
+        ghostUpdateThread.shutdown();
+        scoreUpdateThread.shutdown();
+        ghostAnimationThread.shutdown();
+        pacmanAnimationThread.shutdown();
     }
 }

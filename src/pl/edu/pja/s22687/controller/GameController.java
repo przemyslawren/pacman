@@ -19,7 +19,7 @@ public class GameController implements GameManager {
     public void startNewGame(int rows, int columns) {
         this.model = new GameModel(rows, columns);
         mainMenuFrame.setVisible(false);
-        new GameFrame(model);
+        new GameFrame(model, mainMenuFrame);
     }
 
     @Override
@@ -30,6 +30,7 @@ public class GameController implements GameManager {
     @Override
     public void showSizeOptions() {
         new SizeOptionsFrame(this, mainMenuFrame);
+        mainMenuFrame.setVisible(false);
     }
 
     @Override

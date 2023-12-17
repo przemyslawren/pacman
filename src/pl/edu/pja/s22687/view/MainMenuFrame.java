@@ -20,7 +20,7 @@ public class MainMenuFrame extends JFrame {
             setSize(500, 500);
             setLocationRelativeTo(null);
             setResizable(true);
-            setIconImage(new ImageIcon("src/pl/edu/pja/s22687/resources/ghost.png").getImage());
+            setIconImage(new ImageIcon("src/pl/edu/pja/s22687/resources/ghost_logo.png").getImage());
 
             JPanel panel = new JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));

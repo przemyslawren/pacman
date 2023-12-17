@@ -1,14 +1,16 @@
-package pl.edu.pja.s22687;
+package pl.edu.pja.s22687.threads;
 
 import pl.edu.pja.s22687.model.GameModel;
 import pl.edu.pja.s22687.view.GameFrame;
 
-public class GhostUpdateThread extends Thread {
+import javax.swing.*;
+
+public class ScoreUpdateThread extends Thread {
     private final GameModel model;
     private final GameFrame frame;
     private volatile boolean running = true;
 
-    public GhostUpdateThread(GameModel model, GameFrame frame) {
+    public ScoreUpdateThread(GameModel model, GameFrame frame) {
         this.model = model;
         this.frame = frame;
     }
@@ -17,10 +19,12 @@ public class GhostUpdateThread extends Thread {
     public void run() {
         while (running) {
             if (frame.isActive()) {
-                model.moveGhosts();
+                int currentScore = model.getScore();
+                SwingUtilities.invokeLater(() -> frame.updateScore(currentScore));
+                System.out.println("Score: " + currentScore);
             }
             try {
-                Thread.sleep(500);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 running = false;
             }

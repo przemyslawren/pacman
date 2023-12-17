@@ -13,7 +13,7 @@ public class HighScoresFrame extends JFrame {
         setDefaultLookAndFeelDecorated(true);
         setSize(800, 600);
         setLocationRelativeTo(null);
-        setIconImage(new ImageIcon("src/pl/edu/pja/s22687/resources/ghost.png").getImage());
+        setIconImage(new ImageIcon("src/pl/edu/pja/s22687/resources/ghost_logo.png").getImage());
         setVisible(true);
     }
 }
