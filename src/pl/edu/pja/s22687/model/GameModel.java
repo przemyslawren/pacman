@@ -2,6 +2,10 @@ package pl.edu.pja.s22687.model;
 
 import pl.edu.pja.s22687.CellType;
 import pl.edu.pja.s22687.Direction;
+import pl.edu.pja.s22687.HighScore;
+import pl.edu.pja.s22687.HighScoresManager;
+import pl.edu.pja.s22687.controller.GameController;
+import pl.edu.pja.s22687.threads.GameUpdateThread;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -25,8 +29,9 @@ public class GameModel extends AbstractTableModel {
     private ImageIcon ghostrightIcon;
     private boolean isLeftIconActive = true;
     private boolean isPacmanMouthOpen = true;
+    private GameController controller;
 
-    public GameModel(int rows, int cols) {
+    public GameModel(int rows, int cols, GameController controller) {
         initializeFields(rows, cols);
         initializeMaze();
         generateMaze();
@@ -35,6 +40,7 @@ public class GameModel extends AbstractTableModel {
         placeGhosts(calculateDifficulty(rows, cols));
         moveGhosts();
         loadGhostIcons();
+        this.controller = controller;
     }
 
     private void initializeFields(int rows, int cols) {
@@ -108,7 +114,7 @@ public class GameModel extends AbstractTableModel {
         Point nextLocation = new Point(pacmanLocation);
         moveToNextLocation(direction, nextLocation);
 
-        if (canMove(nextLocation)) {
+        if (canMovePacman(nextLocation)) {
             maze[pacmanLocation.y][pacmanLocation.x] = CellType.CORRIDOR;
 
             if (coins[nextLocation.y][nextLocation.x]) {
@@ -140,10 +146,10 @@ public class GameModel extends AbstractTableModel {
         }
     }
 
-    private boolean canMove(Point location) {
+    private boolean canMovePacman(Point location) {
         return location.x >= 0 && location.x < maze[0].length
                 && location.y >= 0 && location.y < maze.length
-                && maze[location.y][location.x] == CellType.CORRIDOR;
+                && maze[location.y][location.x] == CellType.CORRIDOR || maze[location.y][location.x] == CellType.GHOST;
     }
 
     public void setCurrentDirection(Direction currentDirection) {
@@ -155,21 +161,13 @@ public class GameModel extends AbstractTableModel {
     }
 
     public void updateGameState() {
-        if (currentDirection != Direction.NONE) {
-            movePacman(currentDirection);
-            if (areAllCoinsCollected()) {
-                // Wyświetl komunikat o wygranej
-                JOptionPane.showMessageDialog(null, "Wygrałeś! Twój wynik to: " + getScore(), "Koniec gry", JOptionPane.INFORMATION_MESSAGE);
-                // Zapisz wynik
-                saveHighScore(getScore());
-                // Resetuj grę lub zamknij okno gry
-            }
+
+        movePacman(currentDirection);
+
+        if (checkCollisionWithGhost() || areAllCoinsCollected()) {
+            endGame();
         }
         fireTableDataChanged();
-    }
-
-    private void saveHighScore(int score) {
-
     }
 
     private void placeCoins() {
@@ -247,7 +245,7 @@ public class GameModel extends AbstractTableModel {
         List<Direction> possibleDirections = new ArrayList<>();
         for (Direction dir : Direction.values()) {
             Point nextLocation = calculateNextLocation(row, col, dir);
-            if (canMove(nextLocation.y, nextLocation.x)) {
+            if (canMoveGhost(nextLocation.y, nextLocation.x)) {
                 possibleDirections.add(dir);
             }
         }
@@ -260,8 +258,12 @@ public class GameModel extends AbstractTableModel {
         return nextLocation;
     }
 
-    private boolean canMove(int row, int col) {
+    private boolean canMoveGhost(int row, int col) {
         return row >= 0 && row < rows && col >= 0 && col < cols && maze[row][col] != CellType.WALL;
+    }
+
+    private boolean checkCollisionWithGhost() {
+        return ghosts[pacmanLocation.y][pacmanLocation.x];
     }
 
     public void togglePacmanMouth() {
@@ -286,6 +288,23 @@ public class GameModel extends AbstractTableModel {
     private void loadGhostIcons() {
         ghostleftIcon = new ImageIcon("src/pl/edu/pja/s22687/resources/ghost/ghost_left.jpg");
         ghostrightIcon = new ImageIcon("src/pl/edu/pja/s22687/resources/ghost/ghost_right.jpg");
+    }
+
+    public boolean isGameOver() {
+        return checkCollisionWithGhost() || areAllCoinsCollected();
+    }
+
+    private void endGame() {
+        // Logika zakończenia gry
+        SwingUtilities.invokeLater(() -> {
+            String playerName = JOptionPane.showInputDialog("Koniec gry! Twój wynik: " + getScore() + "\nPodaj swoje imię:");
+            if (playerName != null && !playerName.trim().isEmpty()) {
+                List<HighScore> highScores = HighScoresManager.loadHighScores();
+                highScores.add(new HighScore(playerName, getScore()));
+                HighScoresManager.saveHighScores(highScores);
+            }
+            controller.returnToMainMenu();
+        });
     }
 
     public ImageIcon getCurrentGhostIcon() {

@@ -10,6 +10,7 @@ import pl.edu.pja.s22687.view.SizeOptionsFrame;
 public class GameController implements GameManager {
     private GameModel model;
     private final MainMenuFrame mainMenuFrame;
+    private GameFrame gameFrame;
 
     public GameController() {
         this.mainMenuFrame = new MainMenuFrame(this);
@@ -17,14 +18,15 @@ public class GameController implements GameManager {
 
     @Override
     public void startNewGame(int rows, int columns) {
-        this.model = new GameModel(rows, columns);
+        this.model = new GameModel(rows, columns, this);
+        this.gameFrame = new GameFrame(model, mainMenuFrame);
         mainMenuFrame.setVisible(false);
-        new GameFrame(model, mainMenuFrame);
     }
 
     @Override
     public void showHighScores() {
         new HighScoresFrame();
+        this.mainMenuFrame.setVisible(false);
     }
 
     @Override
@@ -40,6 +42,6 @@ public class GameController implements GameManager {
 
     @Override
     public void returnToMainMenu() {
-        mainMenuFrame.setVisible(true);
+        gameFrame.quitGame();
     }
 }

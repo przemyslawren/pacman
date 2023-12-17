@@ -7,6 +7,7 @@ import pl.edu.pja.s22687.threads.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 
 public class GameFrame extends JFrame {
     private final GameModel model;
@@ -148,7 +149,7 @@ public class GameFrame extends JFrame {
         });
     }
 
-    private void quitGame() {
+    public void quitGame() {
         shutdownThreads();
         this.dispose();
         mainMenuFrame.setVisible(true);
