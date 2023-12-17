@@ -5,8 +5,6 @@ import pl.edu.pja.s22687.Direction;
 import pl.edu.pja.s22687.HighScore;
 import pl.edu.pja.s22687.HighScoresManager;
 import pl.edu.pja.s22687.controller.GameController;
-import pl.edu.pja.s22687.threads.GameUpdateThread;
-
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
@@ -61,7 +59,6 @@ public class GameModel extends AbstractTableModel {
     }
 
     public void generateMaze() {
-        // Rozpocznij od losowego punktu
         dfs(rand.nextInt(rows), rand.nextInt(cols));
     }
 
@@ -73,12 +70,11 @@ public class GameModel extends AbstractTableModel {
         visited[row][col] = true;
         maze[row][col] = CellType.CORRIDOR;
 
-        // Lista kierunków: góra, dół, lewo, prawo
         List<int[]> directions = new ArrayList<>(Arrays.asList(
                 new int[]{-2, 0}, new int[]{2, 0}, new int[]{0, -2}, new int[]{0, 2}
         ));
 
-        Collections.shuffle(directions); // Losowa kolejność kierunków
+        Collections.shuffle(directions);
 
         for (int[] dir : directions) {
             int newRow = row + dir[0];
@@ -92,7 +88,6 @@ public class GameModel extends AbstractTableModel {
     }
 
     private boolean canCreateCorridor(int row, int col) {
-        // Uproszczona wersja warunku dla przełamania ściany
         return row > 0 && col > 0 && row < rows - 1 && col < cols - 1
                 && (rand.nextDouble() < 0.2 || !visited[row][col]);
     }
@@ -278,11 +273,11 @@ public class GameModel extends AbstractTableModel {
         for (boolean[] coin : coins) {
             for (int col = 0; col < coins[0].length; col++) {
                 if (coin[col]) {
-                    return false;  // Znaleziono monetę, która jeszcze nie została zebrana
+                    return false;
                 }
             }
         }
-        return true;  // Wszystkie monety zostały zebrane
+        return true;
     }
 
     private void loadGhostIcons() {
@@ -291,7 +286,6 @@ public class GameModel extends AbstractTableModel {
     }
 
     private void endGame() {
-        // Logika zakończenia gry
         SwingUtilities.invokeLater(() -> {
             String playerName = JOptionPane.showInputDialog("Koniec gry! Twój wynik: " + getScore() + "\nPodaj swoje imię:");
             if (playerName != null && !playerName.trim().isEmpty()) {
