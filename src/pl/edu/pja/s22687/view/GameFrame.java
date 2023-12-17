@@ -7,7 +7,6 @@ import pl.edu.pja.s22687.threads.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.List;
 
 public class GameFrame extends JFrame {
     private final GameModel model;
@@ -15,11 +14,13 @@ public class GameFrame extends JFrame {
     private final JTable table;
     private final JScrollPane scrollPane;
     private final JLabel scoreLabel;
+    private final JLabel timeLabel;
     private final GameUpdateThread gameUpdateThread;
     private final GhostUpdateThread ghostUpdateThread;
     private final ScoreUpdateThread scoreUpdateThread;
     private final GhostAnimationThread ghostAnimationThread;
     private final PacmanAnimationThread pacmanAnimationThread;
+    private final ClockThread clockThread;
 
     public GameFrame(GameModel model, MainMenuFrame mainMenuFrame) {
         this.model = model;
@@ -38,9 +39,17 @@ public class GameFrame extends JFrame {
         scoreLabel = new JLabel("Score: " + model.getScore());
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
         scoreLabel.setForeground(Color.BLACK);
-        scoreLabel.setBackground(new Color(15, 15, 15));
-        scoreLabel.setHorizontalAlignment(JLabel.CENTER);
-        add(scoreLabel, BorderLayout.NORTH);
+
+        timeLabel = new JLabel("00:00:00");
+        timeLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        timeLabel.setForeground(Color.BLACK);
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(scoreLabel, BorderLayout.WEST);
+        topPanel.add(timeLabel, BorderLayout.EAST);
+
+        add(topPanel, BorderLayout.NORTH);
+
         initializeUI();
 
         gameUpdateThread = new GameUpdateThread(model, this);
@@ -48,6 +57,7 @@ public class GameFrame extends JFrame {
         scoreUpdateThread = new ScoreUpdateThread(model, this);
         ghostAnimationThread = new GhostAnimationThread(model, table);
         pacmanAnimationThread = new PacmanAnimationThread(model);
+        clockThread = new ClockThread(timeLabel);
         startThreads();
 
         addWindowListener(new WindowAdapter() {
@@ -166,6 +176,7 @@ public class GameFrame extends JFrame {
         scoreUpdateThread.start();
         ghostAnimationThread.start();
         pacmanAnimationThread.start();
+        clockThread.start();
     }
 
     public void shutdownThreads() {
@@ -174,5 +185,6 @@ public class GameFrame extends JFrame {
         scoreUpdateThread.shutdown();
         ghostAnimationThread.shutdown();
         pacmanAnimationThread.shutdown();
+        clockThread.shutdown();
     }
 }
