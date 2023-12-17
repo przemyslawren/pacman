@@ -290,10 +290,6 @@ public class GameModel extends AbstractTableModel {
         ghostrightIcon = new ImageIcon("src/pl/edu/pja/s22687/resources/ghost/ghost_right.jpg");
     }
 
-    public boolean isGameOver() {
-        return checkCollisionWithGhost() || areAllCoinsCollected();
-    }
-
     private void endGame() {
         // Logika zakończenia gry
         SwingUtilities.invokeLater(() -> {

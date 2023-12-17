@@ -16,15 +16,17 @@ public class HighScoresFrame extends JFrame {
 
     public HighScoresFrame(GameManager controller) {
         this.controller = controller;
-        List<HighScore> highScores = HighScoresManager.loadHighScores();
-        JList<HighScore> highScoreList = new JList<>(new Vector<>(highScores));
+        highScoreModel = new DefaultListModel<>();
+        highScoreList = new JList<>(highScoreModel);
         loadHighScores();
         add(new JScrollPane(highScoreList), BorderLayout.CENTER);
 
         JButton removeButton = new JButton("Remove");
         JButton backButton = new JButton("Back");
 
-        removeButton.addActionListener(e -> removeSelectedHighScore());
+        removeButton.addActionListener(e -> {
+            removeSelectedHighScore();
+        });
         backButton.addActionListener(e -> returnToMainMenu());
 
         JPanel buttonPanel = new JPanel();
@@ -36,22 +38,18 @@ public class HighScoresFrame extends JFrame {
     }
 
     private void loadHighScores() {
-        List<HighScore> highScores = HighScoresManager.loadHighScores();
-        highScoreModel = new DefaultListModel<>();
-        for (HighScore highScore : highScores) {
-            highScoreModel.addElement(highScore);
-        }
-        highScoreList = new JList<>(highScoreModel);
-
+        highScoreModel.clear();
+        HighScoresManager.loadHighScores().forEach(highScoreModel::addElement);
     }
 
     private void removeSelectedHighScore() {
         int selectedIndex = highScoreList.getSelectedIndex();
-        if (selectedIndex != -1) {
+        if (selectedIndex >= 0) {
             HighScore highScore = highScoreModel.getElementAt(selectedIndex);
             HighScoresManager.remove(highScore);
             highScoreModel.remove(selectedIndex);
         }
+        HighScoresManager.saveHighScores(new Vector<>(highScoreList.getSelectedValuesList()));
     }
 
     private void returnToMainMenu() {

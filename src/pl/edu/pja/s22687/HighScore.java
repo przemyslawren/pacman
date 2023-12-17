@@ -14,6 +14,8 @@ public class HighScore implements Serializable {
     public String getName() { return name; }
     public int getScore() { return score; }
 
+
+
     @Override
     public String toString() {
         return name + " " + score;

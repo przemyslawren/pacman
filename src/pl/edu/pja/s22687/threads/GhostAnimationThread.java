@@ -19,9 +19,9 @@ public class GhostAnimationThread extends Thread {
     public void run() {
         while (running) {
             model.toggleGhostIcon();
-            model.fireTableDataChanged(); // Powiadom renderer o zmianie
+            model.fireTableDataChanged();
             try {
-                Thread.sleep(1000); // Czekaj 1 sekundę
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 running = false;
             }
@@ -29,6 +29,6 @@ public class GhostAnimationThread extends Thread {
     }
 
     public void shutdown() {
-        running = false; // Metoda do zakończenia wątku
+        running = false;
     }
 }
