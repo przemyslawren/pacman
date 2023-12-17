@@ -6,6 +6,8 @@ import pl.edu.pja.s22687.HighScoresManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -46,10 +48,10 @@ public class HighScoresFrame extends JFrame {
         int selectedIndex = highScoreList.getSelectedIndex();
         if (selectedIndex >= 0) {
             HighScore highScore = highScoreModel.getElementAt(selectedIndex);
-            HighScoresManager.remove(highScore);
             highScoreModel.remove(selectedIndex);
+            HighScoresManager.remove(highScore);
         }
-        HighScoresManager.saveHighScores(new Vector<>(highScoreList.getSelectedValuesList()));
+        HighScoresManager.saveHighScores(Collections.list((highScoreModel.elements())));
     }
 
     private void returnToMainMenu() {
