@@ -2,12 +2,14 @@
 <h2>Simple app created for my Java OOP classes</h2>
 This project is a Java-based implementation of the classic Pacman game, developed as part of OOP coursework. It utilizes the Model-View-Controller (MVC) design pattern
 and leverages the AWT/Swing libraries for its graphical user interface.
-
+<br>
 Key features include:
-
 Concurrency: The use of threads enables dynamic animations, real-time clock updates, and smooth character movements.
+<br>
 Maze Generation: A depth-first search (DFS) algorithm is employed to generate the game's maze based on specified number of rows and columns.
+<br>
 Unique Approach: An interesting aspect of this project is the foundational use of AbstractTableModel in the game's architecture, showcasing an innovative way to structure and manage game data.
+<br>
 This project shows essential Java programming concepts, including effective use of design patterns, graphical user interfaces, concurrency, and algorithmic problem-solving.
 
 <br>
