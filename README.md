@@ -1,7 +1,7 @@
 <h1>Pacman</h1>
 <h2>Simple app created for my Java OOP classes</h2>
-This project is a Java-based implementation of the classic Pacman game, developed as part of OOP coursework. It utilizes the Model-View-Controller (MVC) design pattern
-and leverages the AWT/Swing libraries for its graphical user interface.
+This project is a Java-based implementation of the classic Pacman game, developed as part of OOP coursework. It utilizes the Model-View-Controller (MVC) design pattern,
+where in this project I decided to hold most of the logic inside of the Model. It leverages the AWT/Swing libraries for its graphical user interface.
 <br><br>
 Key features include:
 <br><br>
